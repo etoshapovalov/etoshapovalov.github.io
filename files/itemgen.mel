@@ -1,0 +1,60 @@
+if ( `window -exists wind` ) {
+    deleteUI -window wind; // delete window when it exists
+}
+window -t "ItemGen" -s false wind;
+window -edit -widthHeight 250 150 wind;
+columnLayout -columnAttach "both" 5 -rowSpacing 10 -columnWidth 250;
+text "";
+text "Minecraft Item Generator for Maya 2019.";
+button -command "buildItem" "Start";
+text "Created by Andrey Shapovalov. (c) 2021";
+text "ver. 1.0. Have Fun!";
+showWindow wind;
+proc buildItem(){
+        string $path = `fileDialog -directoryMask "*.png" -mode 0`;
+        if($path == ""){
+            return;
+        }
+        
+        
+        string $fileNode = createNode("file");
+        setAttr("-type","string",$fileNode+".fileTextureName",$path);
+        setAttr($fileNode+".filterType",0);
+        
+        
+        int $iter, $jter, $count;
+        string $cubes[];
+        for ($iter = 0; $iter < 16; $iter++) {
+            for($jter = 0; $jter < 16; $jter++){
+                float $iterf = $iter;
+                float $jterf = $jter;
+                float $clr[] = colorAtPoint("-u",$iterf/16+0.01,"-v",$jterf/16+0.01,"-o","A",$fileNode);
+                //print($clr[0]);
+                if($clr[0] > 0){
+         
+                    string $cube[] = polyCube("-axis",0,0,0,"-cuv",2);
+                    string $cubeName = $cube[0];
+                    move("-r",$iter,0,$jter,$cubeName);
+                    
+                    int $face, $vertex;
+        
+                    for($face = 0; $face < 6; $face++){
+                        select("-r", $cubeName+".f["+$face+"]");
+                        polyEditUV -pu 0.5 -pv 0.5 -su 0.06 -sv 0.06;
+        
+                        polyEditUV("-u", $iterf/16-0.5+0.03-0.06, "-v", $jterf/16-0.5+0.03-0.06);
+                        
+                    }
+                    $cubes[size($cubes)] = $cubeName;
+                    
+                }
+                $count++;
+            }
+        
+        }
+        
+        select $cubes;
+        string $merged[] = polyUnite("-ch", 1, "-mergeUVSets", 1, "-centerPivot");
+        select("-r",$merged[0]);
+        DeleteHistory;
+}
