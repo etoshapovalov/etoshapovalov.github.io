@@ -8,7 +8,7 @@ text "";
 text "Minecraft Item Generator for Maya 2019.";
 button -command "buildItem" "Start";
 text "Created by Andrey Shapovalov. (c) 2021";
-text "ver. 1.0. Have Fun!";
+text "ver. 1.1. Have Fun!";
 showWindow wind;
 proc buildItem(){
         string $path = `fileDialog -directoryMask "*.png" -mode 0`;
@@ -28,7 +28,7 @@ proc buildItem(){
             for($jter = 0; $jter < 16; $jter++){
                 float $iterf = $iter;
                 float $jterf = $jter;
-                float $clr[] = colorAtPoint("-u",$iterf/16+0.01,"-v",$jterf/16+0.01,"-o","A",$fileNode);
+                float $clr[] = colorAtPoint("-u",($iterf+1)/16,"-v",($jterf+1)/16,"-o","A",$fileNode);
                 //print($clr[0]);
                 if($clr[0] > 0){
          
