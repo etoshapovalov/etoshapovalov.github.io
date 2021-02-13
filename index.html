@@ -1,15 +1,23 @@
 <html>
     <head>
         <style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
             body {
                 background-color: #212121;
                 color: white;
                 font-family: Arial, Helvetica, sans-serif;
             }
-            h1,h4 {
-                margin-bottom: 0px;
+            h1,h4,h6 {
+                margin-bottom: 10px;
                 text-align: center;
             }
+			.ver {
+				text-align: left;
+				
+			}
             #wrapper {
                 height:100%;
                 margin:auto;
@@ -21,9 +29,12 @@
             .block {
                 width:200px;
                 background-color: rgba(255, 255, 255, 0.5);
-                padding: 10px;
+                padding: 20px;
                 border-radius: 15px;
             }
+			.block * {
+				margin-bottom: 5px;
+			}
             a {
                 color:white;
                 text-decoration: none;
@@ -35,17 +46,19 @@
             <div style="margin-bottom: 50px;">
                 <h1>Секретное хранилище Аристокрафт Studios</h1>
         <h4>a.k.a Самый уродливый сайт в интернете</h4>
-                <h4>Но вы можете скачать некоторые мои наработки:</h4>
+                <h4>Но здесь вы можете скачать некоторые мои наработки:</h4>
     </div>
 
-        <div style="display: flex; justify-content: center; align-items: center; width: 100vw; max-width: 100%; height: 100px;">
+        <div style="display: flex; justify-content: center; align-items: center; width: 100vw; max-width: 100%; height: 100px; margin-bottom:50px;">
             <a href="files/itemgen.mel">
                 <div class="block">
                     <h3>ItemGen.mel</h3>
+					<h6 class="ver">ver. 1.1</h6>
                     <p>Скрипт для генерации моделей айтемов из майнкрафт текстур</p>
                 </div>
             </a>
         </div>
+		<footer>По любым вопросам: <a href="https://vk.com/etoshapovalov" target="_blank" style="text-decoration:underline;">VK</a></footer>
         </div>
     </body>
 </html>
