@@ -1,0 +1,118 @@
+if ( `window -exists myWindow` ) {
+    deleteUI myWindow; // delete window when it exists
+}
+window -title "Grasser" -s false -widthHeight 450 230 myWindow;
+formLayout -numberOfDivisions 100 myForm;
+    text -height 40 -fn "boldLabelFont" -label "Grasser v.1.0" titleText;
+     //formLayout -numberOfDivisions 50 myForm;
+    textFieldGrp -label "Prefix" -text "grass" prefixBox;
+    radioButtonGrp -numberOfRadioButtons 3
+    -label "Separation type" -labelArray3 "None" "Short grass" "Long grass"  -select 3 sepTypeRadio;
+    floatSliderGrp -label "Max Angle" -field true
+        -minValue 0.0 -maxValue 90.0
+        -fieldMinValue 0.0 -fieldMaxValue 90.0
+        -value 20 maxAngleSlider;
+    floatSliderGrp -label "Speed Multiplier" -field true
+        -minValue 0.0 -maxValue 100.0
+        -fieldMinValue 0.0 -fieldMaxValue 100.0
+        -value 1 speedSlider;
+     floatSliderGrp -label "Bend Handle Rotation" -field true
+        -minValue -180.0 -maxValue 180.0
+        -fieldMinValue -180.0 -fieldMaxValue 180.0
+        -value 0 rotationSlider;   
+    checkBoxGrp
+        -numberOfCheckBoxes 1
+        -label "Random Time Offset" -value1 true checkBoxGroup;
+    text -height 40 -fn "obliqueLabelFont" -label "Created by Andrey Shapovalov" creditsText;
+    text -height 40 -fn "obliqueLabelFont" -label "https://vk.com/etoshapovalov"  -hyperlink true  creditsLinkText;
+    button -label "OK" -command "grasserDoStuff" buttonOk;
+formLayout -edit
+  -attachForm titleText "top" 0
+  -attachForm titleText "left" 10
+    -attachForm sepTypeRadio "top" 40
+  -attachForm sepTypeRadio "left" -20
+  -attachForm prefixBox "top" 65
+  -attachForm prefixBox "left" -20
+  -attachForm maxAngleSlider "top" 85
+  -attachForm maxAngleSlider "left" -20
+  -attachForm speedSlider "top" 105
+  -attachForm speedSlider "left" -20
+      -attachForm rotationSlider "top" 125
+  -attachForm rotationSlider "left" -20
+    -attachForm checkBoxGroup "top" 148
+  -attachForm checkBoxGroup "left" -20
+      -attachForm creditsText "top" 162
+  -attachForm creditsText "left" 10
+  
+        -attachForm creditsLinkText "top" 162
+  -attachForm creditsLinkText "left" 300
+  
+    -attachForm buttonOk "top" 195
+  -attachForm buttonOk "left" 10
+    -attachForm buttonOk "right" 10
+
+myForm;
+//print `control -query -value $maxAngleSlider`;
+windowPref -remove myWindow;
+showWindow myWindow;
+
+
+
+global proc grasserApplyBends(string $objects[], float $maxAngle, int $isRandomOffsetNeeded, float $speedMult, float $rotationAngle){
+
+    
+    for($i = 0; $i < size($objects); $i++){
+        select("-r", $objects[$i]);
+        string $def[] = nonLinear("-type", "bend", "-lowBound", 0, "-highBound", 1, "-curvature", "0");
+        rename($def[1], $objects[$i]+"BendHandle");
+        select("-r", $objects[$i]+"BendHandle");
+        rotate("-r", "-ws", "-fo", 0, $rotationAngle, 0);
+        
+        select -addFirst $def[0];
+        int $randomOffset = 0;
+        if($isRandomOffsetNeeded){
+            $randomOffset = `rand 0 30`;
+        }
+        expression("-s", $def[0]+".curvature=sin((time+"+$randomOffset+")*"+$speedMult+")*"+$maxAngle+";", "-o", $def[0], "-ae", 1, "-uc", "all");
+    }
+    
+}
+global proc grasserDoStuff(){
+    int $sepType = `radioButtonGrp -q -select sepTypeRadio`;
+    float $maxAngle = `floatSliderGrp -q -value maxAngleSlider`;
+    float $speedMult = `floatSliderGrp -q -value speedSlider`;
+    string $prefix = `textFieldGrp -q -text prefixBox`;
+    float $rotationAngle = `floatSliderGrp -q -value rotationSlider`;
+    int $isRandomOffsetNeeded = `checkBoxGrp -q -value1 checkBoxGroup`;
+
+    
+    
+    string $selArray[] = `ls -sl -o`;
+    if($sepType == 1){
+        grasserApplyBends($selArray, $maxAngle, $isRandomOffsetNeeded, $speedMult, $rotationAngle);
+        return;
+    }
+    string $name = $selArray[0];
+    $e = eval("polyEvaluate -f");
+    
+    polyChipOff -ch 1 -kft 1 -dup 0 -off 0 $name.f[0:$e[0]];
+    polyPerformAction ("polySeparate -rs 1", "o", 0);
+    //polySeparate("-rs", 1, "-ch", 1, $name+"Shape");
+    
+    int $counter = 0;
+    string $objects[];
+    for($i = 0; $i < $e[0]/2; $i = $i+($sepType==3?4:2)){
+        
+        // KOSTYL ALERT
+        if($sepType == 3){
+            polyUnite("-ch", 1, "-mergeUVSets", 1, "-centerPivot", "-name", $prefix+$counter, "polySurface"+($i+4), "polySurface"+($i+3), "polySurface"+($i+2), "polySurface"+($i+1));
+        } else if ($sepType == 2) {
+            polyUnite("-ch", 1, "-mergeUVSets", 1, "-centerPivot", "-name", $prefix+$counter, "polySurface"+($i+2), "polySurface"+($i+1));
+        }
+        select("-r", $prefix+$counter);
+        DeleteHistory;
+        $objects[size($objects)] = $prefix+$counter;
+        $counter++;
+    }
+    grasserApplyBends($objects, $maxAngle, $isRandomOffsetNeeded, $speedMult, $rotationAngle);
+}

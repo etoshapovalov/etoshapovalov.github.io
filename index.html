@@ -39,6 +39,12 @@
                 color:white;
                 text-decoration: none;
             }
+			#script-bar {
+				display: flex; justify-content: center; align-items: center; width: 100vw; max-width: 100%; height: 100px; margin-bottom:50px;
+			}
+			#script-bar a {
+				margin: 0 10px;
+			}
         </style>
     </head>
     <body>
@@ -49,7 +55,7 @@
                 <h4>Но здесь вы можете скачать некоторые мои наработки:</h4>
     </div>
 
-        <div style="display: flex; justify-content: center; align-items: center; width: 100vw; max-width: 100%; height: 100px; margin-bottom:50px;">
+        <div id="script-bar">
             <a href="files/itemgen.mel">
                 <div class="block">
                     <h3>ItemGen.mel</h3>
@@ -57,8 +63,18 @@
                     <p>Скрипт для генерации моделей айтемов из майнкрафт текстур</p>
                 </div>
             </a>
+			<a href="files/grasser.mel">
+                <div class="block">
+                    <h3>Grasser.mel</h3>
+					<h6 class="ver">ver. 1.0</h6>
+                    <p>Скрипт для автоматической анимации качающейся травы.</p>
+                </div>
+            </a>
         </div>
-		<footer>По любым вопросам: <a href="https://vk.com/etoshapovalov" target="_blank" style="text-decoration:underline;">VK</a></footer>
+		<footer style="display:flex; justify-content: center; align-items: center; flex-direction: column;">
+		<span style="margin-bottom:10px;">Перед тем как что либо скачивать, пожалуйста прочитайте: <a href="license.txt" target="_blank" style="text-decoration:underline;">Условия использования</a></span>
+		<span>По любым вопросам: <a href="https://vk.com/etoshapovalov" target="_blank" style="text-decoration:underline;">VK</a></span>
+		</footer>
         </div>
     </body>
 </html>
